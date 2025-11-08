@@ -30,36 +30,6 @@ from sklearn.impute import SimpleImputer
 from sklearn.decomposition import PCA
 
 # ---------------------------
-# 0) CRISP-DM (printed log)
-# ---------------------------
-CRISPDM = """
-CRISP-DM Summary (Task 1)
-1. Business Understanding:
-   - Goal: Prepare Kinect-based gesture sequences for classical ML (kNN/SVM/RF).
-   - Deliverables: Clean 1x240 feature vectors per gesture, EDA visuals, ready CSVs.
-
-2. Data Understanding:
-   - Source: combined.zip -> multiple .txt files; each file = 1 gesture instance.
-   - Each frame has 120 features (60 positions + 60 cosine angles). Variable #frames/file.
-
-3. Data Preparation:
-   - Parse floats, segment into frames (120 per frame; fallback to 60 if needed).
-   - Compute per-feature statistics across time: mean & std.
-   - Concatenate: [pos_mean(60), pos_std(60), ang_mean(60), ang_std(60)] -> 240-D.
-   - Extract labels from filenames (best effort). Track #frames and filename.
-
-4. Modeling (not in this script):
-   - Outputs are suitable for kNN, SVM, RandomForest, etc.
-
-5. Evaluation (not in this script):
-   - Use stratified train/test splits exported here as train-final.csv/test-final.csv.
-
-6. Deployment (not in this script):
-   - Save processed features; version data & code for reproducibility.
-"""
-print(CRISPDM)
-
-# ---------------------------
 # 1) Config & Gesture List
 # ---------------------------
 ROOT = Path(__file__).resolve().parent
@@ -83,13 +53,13 @@ GESTURE_SET = set(GESTURE_LIST)
 float_pattern = re.compile(r'[-+]?(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?')
 
 def read_floats_from_txt(fp: Path):
-    """Read all numeric floats from a text file (ignore any stray text)."""
+
     txt = fp.read_text(errors='ignore')
     nums = [float(x) for x in float_pattern.findall(txt)]
     return np.array(nums, dtype=np.float64)
 
 def infer_frame_size(nums: np.ndarray):
-    """Return 120 if divisible by 120; else 60 if divisible by 60; else None."""
+
     if len(nums) >= 120 and len(nums) % 120 == 0:
         return 120
     if len(nums) >= 60 and len(nums) % 60 == 0:
@@ -121,11 +91,7 @@ def split_pos_angle(features_frame: np.ndarray):
         return None, None
 
 def parse_metadata_from_name(stem: str):
-    """
-    Parse (label_name, label_id, candidate) from filename stem.
-    Examples it can handle (best effort):
-      wind_28_C3.txt, 28-wind-person1.txt, C2-wind-28.txt, wind.txt
-    """
+
     tokens = re.split(r'[\s_\-\.]+', stem.lower())
     label_name = None
     label_id = None
@@ -158,7 +124,7 @@ def parse_metadata_from_name(stem: str):
     return label_name, label_id, candidate
 
 def label_id_from_name(name: str):
-    """Map label name to a stable numeric ID using the canonical list."""
+
     if name is None:
         return None
     if name in GESTURE_SET:

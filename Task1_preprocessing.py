@@ -12,16 +12,6 @@ from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 
-CRISPDM = """
-CRISP-DM (Task 1)
-1) Business Understanding: Classify Kinect sign gestures. Prepare reliable fixed-length features and sanity-check labels.
-2) Data Understanding: 240 engineered features per row (+ labels/IDs/candidate). Inspect shapes, types, missingness, class balance.
-3) Data Preparation: Median-impute numeric features; scale with StandardScaler (fit on train); keep labels intact.
-4) Modeling (next task): Use classical ML on 240-D or DL on sequences. This file prepares the 240-D ML side.
-5) Evaluation/Deployment (next tasks): Split, train, evaluate; persist pipeline.
-"""
-print(CRISPDM)
-
 # ---------- Paths (use Path objects!) ----------
 ROOT = Path(".").resolve()
 TRAIN_CSV = ROOT / "train-final.csv"
